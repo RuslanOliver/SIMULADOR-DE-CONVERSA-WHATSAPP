@@ -13,6 +13,23 @@
 .choices{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:16px}.choices .choice{margin-top:0;margin-bottom:0}
 
 .typing{display:flex;align-items:center;gap:5px;letter-spacing:normal;white-space:nowrap}.typing-label{font-size:13px;margin-right:3px;color:#64776d}.typing-dot{font-size:20px;animation:ana-typing 1.1s infinite ease-in-out;opacity:.35}@keyframes ana-typing{0%,70%,100%{transform:translateY(0);opacity:.35}35%{transform:translateY(-3px);opacity:1}}@media(prefers-reduced-motion:reduce){.typing-dot{animation:none;opacity:.7}}
+
+.purchase-message{min-width:0;max-width:min(480px,87%)}
+.bubble a.purchase-card{display:block;margin:17px 0 5px;padding:17px;border:1px solid #a9d8c6;border-radius:16px;background:linear-gradient(145deg,#fff 0%,#f0faf5 100%);color:#123c30;text-decoration:none;white-space:normal;box-shadow:0 7px 20px #005e541a;animation:purchase-card-float 2.8s ease-in-out infinite;transform-origin:center;transition:border-color .2s}
+.purchase-card-heading{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.purchase-book-icon{display:grid;place-items:center;width:43px;height:49px;border-radius:11px;background:#dff3e9;color:#08765d;flex-shrink:0}
+.purchase-book-icon svg{width:27px;height:27px}
+.purchase-card-description{display:block;min-width:0}
+.purchase-card-eyebrow{display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#4c7c69;line-height:1.5;margin-bottom:4px}
+.purchase-card-title{display:block;font-size:20px;line-height:1.25;font-weight:700;color:#173f32}
+.purchase-card-action{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:14px 16px;border-radius:10px;background:linear-gradient(135deg,#128c6d,#08745d);color:white;font-size:16px;font-weight:700;line-height:1.35;box-shadow:0 4px 9px #08745d26}
+.purchase-card-action>span{font-size:23px;font-weight:400;line-height:1;transition:transform .2s}
+.bubble a.purchase-card:hover,.bubble a.purchase-card:focus-visible{animation-play-state:paused;border-color:#13866a}
+.purchase-card:hover .purchase-card-action>span{transform:translateX(3px)}
+.bubble a.purchase-card:focus-visible{outline:3px solid #128c7e;outline-offset:5px}
+@keyframes purchase-card-float{0%,100%{transform:translateY(0);box-shadow:0 7px 20px #005e541a,0 0 0 0 #128c6d18}50%{transform:translateY(-3px);box-shadow:0 12px 25px #005e5426,0 0 0 6px #128c6d00}}
+@media(max-width:400px){.bubble a.purchase-card{padding:13px}.purchase-card-heading{gap:9px}.purchase-card-title{font-size:18px}.purchase-card-action{font-size:15px;padding:13px}}
+@media(prefers-reduced-motion:reduce){.bubble a.purchase-card{animation:none;transform:none}.purchase-card-action>span{transition:none}}
 </style>
 </head>
 <body>
@@ -104,9 +121,19 @@ async function purchase(turn){
   await say(FLOW.payment,turn);if(turn!==generation)return;
   const final=await say('',turn);if(!final||turn!==generation)return;
   const bold=document.createElement('strong');bold.textContent='Link liberado!';
-  const link=document.createElement('a');link.href=FLOW.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=FLOW.url;
-  final.prepend(bold,document.createTextNode(' Clique aqui > '),link,document.createTextNode(' E garanta agora sua leitura!'));
-  note.textContent='Clique no link da mensagem para continuar.';scrollChat();
+  final.classList.add('purchase-message');
+  const link=document.createElement('a');link.className='purchase-card';link.href=FLOW.url;link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label','Conhecer o livro online As Profecias de 2027');
+  const heading=document.createElement('span');heading.className='purchase-card-heading';
+  const icon=document.createElement('span');icon.className='purchase-book-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h6a3 3 0 0 1 3 3v15a4 4 0 0 0-4-3H4z"/><path d="M13 6a3 3 0 0 1 3-3h4v15h-3a4 4 0 0 0-4 3"/></svg>';
+  const description=document.createElement('span');description.className='purchase-card-description';
+  const eyebrow=document.createElement('span');eyebrow.className='purchase-card-eyebrow';eyebrow.textContent='LIVRO ONLINE';
+  const title=document.createElement('strong');title.className='purchase-card-title';title.textContent='As Profecias de 2027';
+  description.append(eyebrow,title);heading.append(icon,description);
+  const action=document.createElement('span');action.className='purchase-card-action';action.textContent='Quero conhecer o livro';
+  const arrow=document.createElement('span');arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(arrow);
+  link.append(heading,action);
+  final.prepend(bold,document.createTextNode(' Garanta agora sua leitura no cartão abaixo.'),link);
+  note.textContent='Toque no cartão para conhecer o livro.';scrollChat();
 }
 function choose(label,turn,next){chooseMany([{label,next}],turn);}
 function chooseMany(options,turn){
