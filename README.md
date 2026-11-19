@@ -13,7 +13,6 @@ Abra `index.html` em um navegador. O projeto funciona como uma página estática
 - Aviso “Ana está digitando...” e pontos animados antes das respostas.
 - Opções para conhecer o livro, tirar dúvidas sobre o valor e seguir para a compra.
 - Link final para https://asprofecias2027.vercel.app/.
-- Botão para reiniciar a demonstração.
 - Layout adaptado a celulares e computadores.
 
 ## Arquivos
